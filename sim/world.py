@@ -2,7 +2,7 @@ import csv
 
 
 def get_weather_hourly():
-    with open('weather_data.csv', newline='') as csvfile:
+    with open('sim/weather_data.csv', newline='') as csvfile:
         reader = csv.DictReader(csvfile)
         data = []
         for row in reader:
