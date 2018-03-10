@@ -19,9 +19,15 @@ def yielder(arg):
         print("z= " + str(z))
         yield 2 * x
 
+gen = get_weather_hourly()
+print(gen)
+print(gen.__next__()["NAME"])
 
-for i in yielder(range(10)):
-    print(i)
+# x = 10
+# for i in get_weather_hourly():
+#     if x > 0:
+#         print(i["DATE"])
+#         x = x - 1
 
 
 
