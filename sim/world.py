@@ -7,7 +7,7 @@ from dateutil import parser
 from sim import world_utils
 
 
-class Weather(object):
+class Weather:
     """
     Static keys for returning similar dicts for different implementations
     """
@@ -45,9 +45,7 @@ class WeatherCsv(Weather):
     @staticmethod
     def weather_from_row(row):
         result = dict()
-        for x in row:
-            if x == "HLY-TEMP-NORMAL":
-                result[Weather.TEMP] = WeatherCsv.fahrenheit_to_celcius(float(row[x]))
+        result[Weather.TEMP] = WeatherCsv.fahrenheit_to_celcius(float(row["HLY-TEMP-NORMAL"]))
         return result
 
     @staticmethod
