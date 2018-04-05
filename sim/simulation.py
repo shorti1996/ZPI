@@ -1,15 +1,22 @@
-from sim.home import *
-
 class Simulation(object):
 
-    def __init__(self, building):
-        self.building = building
+    def __init__(self, state):
+        self.state = state
 
-    def step(self, state, delta):
-        localBuilding = state.building
+    def step(self, delta):
+        localBuilding = self.state.building
 
-        # TODO (mkarol) simulate single step
-        for i in range(0, len(state.building.rooms)):
+        # Temperature calcuations
+        partitions = set()
+        for room in localBuilding.rooms:
+            partitions.update(room.partitions)
+
+        for partition in partitions:
+            partition.recalculateTemperatures(delta)
+
+        for i in range(0, len(localBuilding.rooms)):
             localBuilding.rooms[i].light = localBuilding.rooms[i].light + 2
 
-        state.building = localBuilding
+        self.state.building = localBuilding
+
+

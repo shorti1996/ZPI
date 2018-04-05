@@ -1,12 +1,14 @@
-from sim.simulation import *
-from sim.controller import *
-from sim.home import *
-from multiprocessing import Process
 import csv
 import time
 from dateutil import parser
 from sim import world_utils
 
+def static_vars(**kwargs):
+    def decorate(func):
+        for k in kwargs:
+            setattr(func, k, kwargs[k])
+        return func
+    return decorate
 
 class Singleton(type):
     _instances = {}
@@ -16,39 +18,45 @@ class Singleton(type):
             cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
         return cls._instances[cls]
 
-class World:
+
+@static_vars(pressure=100000)
+class World(object, metaclass=Singleton):
     state = None
-    def __init__(self, curr_timestamp):
-        self.weather = WeatherCsv('weather_data.csv')
-        if curr_timestamp == 0:
-            pass
-        else:
-            self.timestamp = curr_timestamp
-            
-def createSimulation(state, delta=0.01):
-    simulation = Simulation(state.building)
-    controller = Controller(state.building)
+    # def __init__(self, curr_timestamp):
+    #     self.weather = WeatherCsv('weather_data.csv')
+    #     if curr_timestamp == 0:
+            # pass
+        # else:
+        #     self.timestamp = curr_timestamp
 
-    # Way of keeping constatnt FPS
-    FPS = 10
-    start = time.time()
-    simulation.step(state, delta)
-    controller.step(state, delta)
-    end = time.time()
-    sleepInterval = (1 / FPS) - (start - end)
+def get_weather_hourly():
+    with open('sim/weather_data.csv', newline='') as csvfile:
+        reader = csv.DictReader(csvfile)
+        data = []
+        for row in reader:
+            data.append(row)
+            yield row
+        # for row in data:
+        #     print(row['STATION'], row['DATE'])
 
-    while True:
-        simulation.step(state, delta)
-        controller.step(state, delta)
-        print("Simulation Works")
-        time.sleep(sleepInterval)
 
-def startController(delta=0.01):
-    world = World()
-    building = generateBuilding()
-    world.state = createBuildingState(building)
-    process = Process(target=createSimulation, args=[world.state, delta])
-    process.start()
+def yielder(arg):
+    z = 0
+    for x in arg:
+        z = z + 1
+        print("z= " + str(z))
+        yield 2 * x
+
+gen = get_weather_hourly()
+print(gen)
+print(gen.__next__()["NAME"])
+
+# x = 10
+# for i in get_weather_hourly():
+#     if x > 0:
+#         print(i["DATE"])
+#         x = x - 1
+
 
 class Weather:
     """
@@ -56,7 +64,7 @@ class Weather:
     """
     TEMP = "temp"
 
-    @abc.abstractmethod
+    # @abc.abstractmethod
     def get_weather(self, timestamp):
         raise NotImplementedError("You must implement __get_weather__")
 

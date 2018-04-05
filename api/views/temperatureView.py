@@ -6,20 +6,21 @@ from sim.world import *
 class TemperatureView(generics.RetrieveUpdateAPIView):
     def get(self, request, *args, **kwargs):
         world = World()
-        state = world.state
+        localBuilding = world.state.building
         roomId = kwargs['roomId']
-        if roomId > len(state.rooms) - 1:
+        if roomId > len(localBuilding.rooms) - 1:
             return HttpResponseNotFound('<h1>Room number is out of range</h1>')
 
         obj = dict()
         obj['roomId'] = kwargs['roomId']
-        obj['light'] = state.rooms[roomId]['currentTemperature']
+        obj['temperature'] = localBuilding.rooms[roomId].temperature
 
         return JsonResponse(obj)
 
     def put(self, request, *args, **kwargs):
         # TODO (mkarol) add setting room temperature
         pass
+
 
 class TemperatureHistoryView(generics.RetrieveAPIView):
     def get(self, request, *args, **kwargs):
