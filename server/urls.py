@@ -22,5 +22,5 @@ urlpatterns = [
     path('api/', include('api.urls')),
 ]
 
-# start world.simulation
+startController()
 
