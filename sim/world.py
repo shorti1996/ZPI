@@ -1,11 +1,54 @@
-import abc
+from sim.simulation import *
+from sim.controller import *
+from sim.home import *
+from multiprocessing import Process
 import csv
-import datetime
-
+import time
 from dateutil import parser
-
 from sim import world_utils
 
+
+class Singleton(type):
+    _instances = {}
+
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
+        return cls._instances[cls]
+
+class World:
+    state = None
+    def __init__(self, curr_timestamp):
+        self.weather = WeatherCsv('weather_data.csv')
+        if curr_timestamp == 0:
+            pass
+        else:
+            self.timestamp = curr_timestamp
+            
+def createSimulation(state, delta=0.01):
+    simulation = Simulation(state.building)
+    controller = Controller(state.building)
+
+    # Way of keeping constatnt FPS
+    FPS = 10
+    start = time.time()
+    simulation.step(state, delta)
+    controller.step(state, delta)
+    end = time.time()
+    sleepInterval = (1 / FPS) - (start - end)
+
+    while True:
+        simulation.step(state, delta)
+        controller.step(state, delta)
+        print("Simulation Works")
+        time.sleep(sleepInterval)
+
+def startController(delta=0.01):
+    world = World()
+    building = generateBuilding()
+    world.state = createBuildingState(building)
+    process = Process(target=createSimulation, args=[world.state, delta])
+    process.start()
 
 class Weather:
     """
@@ -51,16 +94,6 @@ class WeatherCsv(Weather):
     @staticmethod
     def fahrenheit_to_celcius(fahrenheit):
         return (fahrenheit - 32) / 1.8
-
-
-class World:
-    def __init__(self, curr_timestamp):
-        self.weather = WeatherCsv('weather_data.csv')
-        if curr_timestamp == 0:
-            pass
-        else:
-            self.timestamp = curr_timestamp
-
 
 if __name__ == '__main__':
     world = World(0)
