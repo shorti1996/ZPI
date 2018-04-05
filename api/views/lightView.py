@@ -1,5 +1,5 @@
 from rest_framework import generics
-from django.http import JsonResponse, HttpResponseNotFound
+from django.http import JsonResponse, HttpResponseNotFound, HttpResponse
 from random import randrange
 from sim.world import *
 
@@ -18,8 +18,19 @@ class LightView(generics.RetrieveUpdateAPIView):
         return JsonResponse(obj)
 
     def put(self, request, *args, **kwargs):
-        # TODO (mkarol) add setting room light
-        pass
+        world = World()
+        localBuilding = world.state.building
+        roomId = kwargs['roomId']
+        if roomId > len(localBuilding.rooms) - 1:
+            return HttpResponseNotFound('<h1>Room number is out of range</h1>')
+
+        # Setting value
+        localBuilding.rooms[roomId].light = None
+
+        world.state.building = localBuilding
+
+        return HttpResponse(status=200)
+
 
 class LightHistoryView(generics.RetrieveAPIView):
     def get(self, request, *args, **kwargs):
