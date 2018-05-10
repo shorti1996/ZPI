@@ -1,6 +1,7 @@
 from sim.phisics import *
 from sim.world import *
 
+
 @static_vars(counter=0)
 class Partition(object):
     def __init__(self, lam, size, thickness, rooms=[]):
@@ -45,22 +46,26 @@ class Room(object):
         self.utilities = []
         self.partitions = []
         self._temperature = 0
-        self.__setTemperature = 0
-        self.light = 0
-        self.__setLight = 0
+        self._setTemperature = 0
+        self.light = False
 
     @property
     def temperature(self):
         return self._temperature
 
+    @property
+    def setTemperature(self):
+        return self._setTemperature
+
     @temperature.setter
     def temperature(self, value):
-        self.__setTemperature = value
+        self._setTemperature = value
 
     def addHeat(self, energy):
         # Recalculate temperature
         world = World()
         self._temperature += energy / (MaterialDensity['air'](self.temperature, world.pressure) * self.volume * SpecificHeats['air'])
+
 
 class OutsideRoom(Room):
     def __init__(self, name):
@@ -69,6 +74,10 @@ class OutsideRoom(Room):
     @property
     def temperature(self):
         # TODO(mkarol) Get temperature on given moment of simulation
+        return self._temperature
+
+    @property
+    def setTemperature(self):
         return self._temperature
 
     @temperature.setter
