@@ -1,3 +1,5 @@
+from json import JSONEncoder
+
 from sim.phisics import *
 from sim.world import *
 
@@ -38,6 +40,12 @@ class Partition(object):
         return self.counter - other.counter
 
 
+class Light():
+    def __init__(self, friendly_name):
+        self.name = friendly_name
+        self.on = False
+
+
 class Room(object):
     def __init__(self, name, volume):
         self.name = name
@@ -45,6 +53,7 @@ class Room(object):
         self.sensors = []
         self.utilities = []
         self.partitions = []
+        self._lights = []
         self._temperature = 0
         self._setTemperature = 0
         self.light = False
@@ -66,6 +75,13 @@ class Room(object):
         world = World()
         self._temperature += energy / (MaterialDensity['air'](self.temperature, world.pressure) * self.volume * SpecificHeats['air'])
 
+    @property
+    def lights(self):
+        return self._lights
+
+    @lights.setter
+    def lights(self, new_lights):
+        self._lights = new_lights
 
 class OutsideRoom(Room):
     def __init__(self, name):
@@ -113,7 +129,8 @@ def generateBuilding():
 
     rooms[1].addHeat(1000000)
     print(rooms[1].temperature)
+    rooms[1].lights = [Light("Glowne oswietlenie"), Light("Lampka na biurku"), Light("Kinkiet")]
 
-    Partition(lam=MaterialHeatConductivity['reinforced concrete'], size=100, thickness=0.1, rooms=[rooms[0], rooms[1]])
+    Partition(lam=MaterialHeatConductivity['reinforced concrete'], size=100, thickness=0.1, rooms=rooms)
 
     return building

@@ -1,6 +1,10 @@
+import json
+
 from rest_framework import generics
 from django.http import JsonResponse, HttpResponseNotFound, HttpResponseBadRequest, HttpResponse
 from random import randrange, getrandbits
+
+from sim.home import Light
 from sim.world import *
 
 class HouseLightView(generics.RetrieveAPIView):
@@ -29,7 +33,13 @@ class LightView(generics.RetrieveUpdateAPIView):
 
         obj = dict()
         obj['roomId'] = roomId
-        obj['light'] = room.light
+        # obj['light'] = room.light
+        lights = []
+        for l in room.lights:
+            light = {'name': l.name, 'state': l.on}
+            lights.append(light)
+        # lights = [x for x in room.lights]
+        obj['lights'] = lights
 
         return JsonResponse(obj)
 
