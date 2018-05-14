@@ -36,7 +36,7 @@ class LightView(generics.RetrieveUpdateAPIView):
         # obj['light'] = room.light
         lights = []
         for l in room.lights:
-            light = {'name': l.name, 'state': l.on}
+            light = {'id': l.id,'name': l.name, 'state': l.on}
             lights.append(light)
         # lights = [x for x in room.lights]
         obj['lights'] = lights
@@ -49,18 +49,28 @@ class LightView(generics.RetrieveUpdateAPIView):
 
         if 'roomId' not in kwargs or kwargs['roomId'] > len(localBuilding.rooms) - 1:
             return HttpResponseNotFound('<h1>Room number is out of range</h1>')
+        if 'lightId' not in request.query_params:
+            return HttpResponseBadRequest('<h1>Bad light id</h1>')
+        if 'state' not in request.query_params:
+            return HttpResponseBadRequest('<h1>Bad light state</h1>')
 
-        if 'setLight' not in request.data or request.data['setLight'] not in ['true', 'false']:
-            return HttpResponseBadRequest('<h1>Set light state out of range</h1>')
+        # if 'setLight' not in request.data or request.data['setLight'] not in ['true', 'false']:
+        #     return HttpResponseBadRequest('<h1>Set light state out of range</h1>')
 
         roomId = kwargs['roomId']
-        state = request.data['setLight'] == 'true'
+        state = request.query_params['state'] == 'true'
         room = localBuilding.rooms[roomId]
-
-        room.light = state
-        world.state.building = localBuilding
-
-        return HttpResponse('', status=200)
+        # TODO DEBUG
+        # lightId = str(room.lights[0].id)
+        lightId = request.query_params['lightId']
+        lights = [x for x in room.lights if str(x.id) == lightId]
+        if len(lights) == 1:
+            light = lights[0]
+            light.on = state
+            world.state.building = localBuilding
+            return HttpResponse('', status=200)
+        else:
+            return HttpResponseBadRequest('<h1>Bad light id</h1>')
 
 
 class HouseLightHistoryView(generics.RetrieveAPIView):

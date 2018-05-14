@@ -1,3 +1,4 @@
+import uuid
 from json import JSONEncoder
 
 from sim.phisics import *
@@ -41,9 +42,13 @@ class Partition(object):
 
 
 class Light():
+
+    uuid_ns = uuid.uuid4()
+
     def __init__(self, friendly_name):
         self.name = friendly_name
         self.on = False
+        self.id = uuid.uuid5(Light.uuid_ns, str(uuid.uuid1()))
 
 
 class Room(object):
@@ -129,7 +134,7 @@ def generateBuilding():
 
     rooms[1].addHeat(1000000)
     print(rooms[1].temperature)
-    rooms[1].lights = [Light("Glowne oswietlenie"), Light("Lampka na biurku"), Light("Kinkiet")]
+    rooms[1].lights = [Light("Glowne oswietlenie"), Light("Glowne oswietlenie"), Light("Lampka na biurku"), Light("Kinkiet")]
 
     Partition(lam=MaterialHeatConductivity['reinforced concrete'], size=100, thickness=0.1, rooms=rooms)
 
