@@ -7,4 +7,7 @@ class Controller(object):
         # TODO (mkarol) create controllers for each room PID
 
         localBuilding = state.building
+
+        # TODO (mkarol) simulate single step
+
         state.building = localBuilding
