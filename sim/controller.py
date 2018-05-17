@@ -9,7 +9,5 @@ class Controller(object):
         localBuilding = state.building
 
         # TODO (mkarol) simulate single step
-        for i in range(0, len(state.building.rooms)):
-            localBuilding.rooms[i].light = localBuilding.rooms[i].light - 1
 
         state.building = localBuilding

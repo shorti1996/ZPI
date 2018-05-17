@@ -14,9 +14,6 @@ class Simulation(object):
         for partition in partitions:
             partition.recalculateTemperatures(delta)
 
-        for i in range(0, len(localBuilding.rooms)):
-            localBuilding.rooms[i].light = localBuilding.rooms[i].light + 2
-
         self.state.building = localBuilding
 
 
