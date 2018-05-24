@@ -7,16 +7,10 @@ def celciusDegreeToKelvin(temperature):
 
     return temperature + const0CelciusDegreeInKelvin
 
+
 # In [ J/(kg * K) ]
 SpecificHeats = {
     'air': 1005,
-}
-
-# In [ W/(m*K) ] == [ J/(m*K*s) ]
-MaterialHeatConductivity = {
-    'reinforced concrete': 1.7,
-    'brick': 0.8,
-    'wood': 0.2,
 }
 
 # In [ J/(kg*K) ]

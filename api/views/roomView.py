@@ -5,6 +5,7 @@ from sim.world import *
 
 
 class RoomView(generics.RetrieveAPIView):
+    # @api_permission(['User'])
     def get(self, request, *args, **kwargs):
         world = World()
         localBuilding = world.state.building
@@ -18,6 +19,7 @@ class RoomView(generics.RetrieveAPIView):
         return JsonResponse(obj)
 
 class RoomDetailView(generics.RetrieveAPIView):
+    # @api_permission(['User'])
     def get(self, request, *args, **kwargs):
         world = World()
         localBuilding = world.state.building
