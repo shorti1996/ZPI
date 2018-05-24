@@ -2,8 +2,11 @@ from rest_framework import generics
 from django.http import JsonResponse, HttpResponseNotFound, HttpResponseBadRequest, HttpResponse
 from random import randrange, getrandbits
 from sim.world import *
+from api.api_permission import api_permission
+
 
 class HouseLightView(generics.RetrieveAPIView):
+    # @api_permission(['User'])
     def get(self, request, *args, **kwargs):
         world = World()
         localBuilding = world.state.building
@@ -17,6 +20,7 @@ class HouseLightView(generics.RetrieveAPIView):
 
 
 class LightView(generics.RetrieveUpdateAPIView):
+    # @api_permission(['User'])
     def get(self, request, *args, **kwargs):
         world = World()
         localBuilding = world.state.building
@@ -33,6 +37,7 @@ class LightView(generics.RetrieveUpdateAPIView):
 
         return JsonResponse(obj)
 
+    # @api_permission(['UserWithPrivilege'])
     def put(self, request, *args, **kwargs):
         world = World()
         localBuilding = world.state.building
@@ -54,6 +59,7 @@ class LightView(generics.RetrieveUpdateAPIView):
 
 
 class HouseLightHistoryView(generics.RetrieveAPIView):
+    # @api_permission(['User'])
     def get(self, request, *args, **kwargs):
 
         if 'nlast' not in kwargs:
@@ -66,6 +72,7 @@ class HouseLightHistoryView(generics.RetrieveAPIView):
 
 
 class LightHistoryView(generics.RetrieveAPIView):
+    # @api_permission(['User'])
     def get(self, request, *args, **kwargs):
         world = World()
         localBuilding = world.state.building
