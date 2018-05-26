@@ -2,10 +2,11 @@ from rest_framework import generics
 from django.http import JsonResponse, HttpResponseNotFound, HttpResponse
 from random import randrange
 from sim.world import *
+from api.api_permission import *
 
 
 class RoomView(generics.RetrieveAPIView):
-    # @api_permission(['User'])
+    @api_permission(['User'])
     def get(self, request, *args, **kwargs):
         world = World()
         localBuilding = world.state.building
@@ -19,7 +20,7 @@ class RoomView(generics.RetrieveAPIView):
         return JsonResponse(obj)
 
 class RoomDetailView(generics.RetrieveAPIView):
-    # @api_permission(['User'])
+    @api_permission(['User'])
     def get(self, request, *args, **kwargs):
         world = World()
         localBuilding = world.state.building
