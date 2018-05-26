@@ -6,7 +6,7 @@ from api.api_permission import api_permission
 
 
 class HouseLightView(generics.RetrieveAPIView):
-    # @api_permission(['User'])
+    @api_permission(['User'])
     def get(self, request, *args, **kwargs):
         world = World()
         localBuilding = world.state.building
@@ -20,7 +20,7 @@ class HouseLightView(generics.RetrieveAPIView):
 
 
 class LightView(generics.RetrieveUpdateAPIView):
-    # @api_permission(['User'])
+    @api_permission(['User'])
     def get(self, request, *args, **kwargs):
         world = World()
         localBuilding = world.state.building
@@ -37,7 +37,7 @@ class LightView(generics.RetrieveUpdateAPIView):
 
         return JsonResponse(obj)
 
-    # @api_permission(['UserWithPrivilege'])
+    @api_permission(['Owner'])
     def put(self, request, *args, **kwargs):
         world = World()
         localBuilding = world.state.building
@@ -59,7 +59,7 @@ class LightView(generics.RetrieveUpdateAPIView):
 
 
 class HouseLightHistoryView(generics.RetrieveAPIView):
-    # @api_permission(['User'])
+    @api_permission(['User'])
     def get(self, request, *args, **kwargs):
 
         if 'nlast' not in kwargs:
@@ -72,7 +72,7 @@ class HouseLightHistoryView(generics.RetrieveAPIView):
 
 
 class LightHistoryView(generics.RetrieveAPIView):
-    # @api_permission(['User'])
+    @api_permission(['User'])
     def get(self, request, *args, **kwargs):
         world = World()
         localBuilding = world.state.building

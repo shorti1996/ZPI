@@ -8,8 +8,9 @@ def api_permission(permission_list):
     def wrapper(func):
         def func_wrapper(self, args, **kwargs):
             try:
+                print(args.user)
                 user = User.objects.get(username=args.user)
-                if not user.userprofilemodel.roleName in permission_list:
+                if not user.groups.filter(name__in=permission_list).exists():
                     return HttpResponse(status=403)
                 return func(self, args, **kwargs)
             except Exception as e:

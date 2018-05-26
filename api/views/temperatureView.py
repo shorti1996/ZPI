@@ -2,9 +2,10 @@ from rest_framework import generics
 from django.http import JsonResponse, HttpResponseNotFound, HttpResponseBadRequest, HttpResponse
 from random import randrange
 from sim.world import *
+from api.api_permission import *
 
 class HouseTemperatureView(generics.RetrieveAPIView):
-    # @api_permission(['User'])
+    @api_permission(['User'])
     def get(self, request, *args, **kwargs):
         world = World()
         localBuilding = world.state.building
@@ -17,7 +18,7 @@ class HouseTemperatureView(generics.RetrieveAPIView):
         return JsonResponse(obj)
 
 class TemperatureView(generics.RetrieveUpdateAPIView):
-    # @api_permission(['User'])
+    @api_permission(['User'])
     def get(self, request, *args, **kwargs):
         world = World()
         localBuilding = world.state.building
@@ -35,7 +36,7 @@ class TemperatureView(generics.RetrieveUpdateAPIView):
 
         return JsonResponse(obj)
 
-    # @api_permission(['UserWithPrivilege'])
+    @api_permission(['Owner'])
     def put(self, request, *args, **kwargs):
         world = World()
         localBuilding = world.state.building
@@ -61,7 +62,7 @@ class TemperatureView(generics.RetrieveUpdateAPIView):
 
 
 class HouseTemperatureHistoryView(generics.RetrieveAPIView):
-    # @api_permission(['User'])
+    @api_permission(['User'])
     def get(self, request, *args, **kwargs):
         obj = dict()
 
@@ -73,7 +74,7 @@ class HouseTemperatureHistoryView(generics.RetrieveAPIView):
         return JsonResponse(obj)
 
 class TemperatureHistoryView(generics.RetrieveAPIView):
-    # @api_permission(['User'])
+    @api_permission(['User'])
     def get(self, request, *args, **kwargs):
         world = World()
         localBuilding = world.state.building
