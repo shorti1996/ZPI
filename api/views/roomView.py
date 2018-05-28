@@ -11,12 +11,9 @@ class RoomView(generics.RetrieveAPIView):
         world = World()
         localBuilding = world.state.building
 
-        obj = dict()
-        obj['rooms'] = []
-        for i in range(0, len(localBuilding.rooms)):
-            room = localBuilding.rooms[i]
-            obj['rooms'].append({'roomId': i, 'name': room.name})
-
+        obj = {
+            'rooms': list(map(lambda room: {'roomId': room.id, 'name': room.name}, localBuilding.rooms))
+        }
         return JsonResponse(obj)
 
 class RoomDetailView(generics.RetrieveAPIView):
@@ -28,13 +25,13 @@ class RoomDetailView(generics.RetrieveAPIView):
         if 'roomId' not in kwargs or kwargs['roomId'] > len(localBuilding.rooms) - 1:
             return HttpResponseNotFound('<h1>Room number is out of range</h1>')
 
-        obj = dict()
-
         roomId = kwargs['roomId']
         room = localBuilding.rooms[roomId]
 
-        obj['roomId'] = roomId
-        obj['roomName'] = room.name
-        obj['roomVolume'] = room.volume
+        obj = {
+            'roomId': roomId,
+            'roomName': room.name,
+            'roomVolume': room.volume,
+        }
 
         return JsonResponse(obj)

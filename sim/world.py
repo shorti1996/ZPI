@@ -1,7 +1,13 @@
 import csv
 import time
 from dateutil import parser
-from sim import world_utils
+from datetime import datetime
+from sim import world_utils, physics
+import collections
+import bisect
+
+
+
 
 def static_vars(**kwargs):
     def decorate(func):
@@ -9,6 +15,7 @@ def static_vars(**kwargs):
             setattr(func, k, kwargs[k])
         return func
     return decorate
+
 
 class Singleton(type):
     _instances = {}
@@ -22,40 +29,10 @@ class Singleton(type):
 @static_vars(pressure=100000)
 class World(object, metaclass=Singleton):
     state = None
-    # def __init__(self, curr_timestamp):
-    #     self.weather = WeatherCsv('weather_data.csv')
-    #     if curr_timestamp == 0:
-            # pass
-        # else:
-        #     self.timestamp = curr_timestamp
 
-def get_weather_hourly():
-    with open('sim/weather_data.csv', newline='') as csvfile:
-        reader = csv.DictReader(csvfile)
-        data = []
-        for row in reader:
-            data.append(row)
-            yield row
-        # for row in data:
-        #     print(row['STATION'], row['DATE'])
-
-
-def yielder(arg):
-    z = 0
-    for x in arg:
-        z = z + 1
-        print("z= " + str(z))
-        yield 2 * x
-
-gen = get_weather_hourly()
-print(gen)
-print(gen.__next__()["NAME"])
-
-# x = 10
-# for i in get_weather_hourly():
-#     if x > 0:
-#         print(i["DATE"])
-#         x = x - 1
+    def __init__(self):
+        self.weather = WeatherCsv('sim/weather_data.csv')
+        self.soil = SoilCsv('sim/soil_data.csv')
 
 
 class Weather:
@@ -64,7 +41,6 @@ class Weather:
     """
     TEMP = "temp"
 
-    # @abc.abstractmethod
     def get_weather(self, timestamp):
         raise NotImplementedError("You must implement __get_weather__")
 
@@ -73,43 +49,62 @@ class WeatherCsv(Weather):
     DATE_FMT = "%Y-%m-%dT%H:%M:%S"
 
     def __init__(self, filename):
-        self.weather_data = self.load_weather_data(filename)
+        (self.weather_data, self.weather_data_keys) = self.load_weather_data(filename)
 
     @staticmethod
     def load_weather_data(filename):
         with open(filename, newline='') as csvfile:
             reader = csv.DictReader(csvfile)
-            data = []
+            data = collections.OrderedDict()
             for row in reader:
-                data.append(row)
-            return data
+                date_time = datetime.strptime("2017-" + row["DATE"], WeatherCsv.DATE_FMT).timestamp()
+                data[date_time] = row
+            return data, list(data.keys())
 
     def get_weather(self, timestamp):
-        if timestamp == 0:
-            return {Weather.TEMP: self.weather_data[0]["HLY-TEMP-NORMAL"]}
-        else:
-            for x in self.weather_data:
-                date = datetime.datetime.strptime("2010-" + x["DATE"], WeatherCsv.DATE_FMT)
-                if date.timestamp() > timestamp:
-                    return self.weather_from_row(x)
+        index = bisect.bisect_left(self.weather_data_keys, timestamp)
+        return self.weather_from_row(self.weather_data[self.weather_data_keys[index]])
 
     @staticmethod
     def weather_from_row(row):
         result = dict()
-        result[Weather.TEMP] = WeatherCsv.fahrenheit_to_celcius(float(row["HLY-TEMP-NORMAL"]))
+        result[Weather.TEMP] = physics.fahrenheitDegreeToCelcius(float(row["HLY-TEMP-NORMAL"]))
         return result
 
+
+class Soil:
+    """
+    Static keys for returning similar dicts for different implementations
+    """
+    TEMP = "temp"
+
+    def get_soil(self, timestamp):
+        raise NotImplementedError("You must implement __get_soil__")
+
+
+class SoilCsv(Soil):
+    DATE_FMT = "%Y-%m-%d"
+
+    def __init__(self, filename):
+        self.soil_data, self.soil_data_keys = self.load_soil_data(filename)
+
     @staticmethod
-    def fahrenheit_to_celcius(fahrenheit):
-        return (fahrenheit - 32) / 1.8
+    def load_soil_data(filename):
+        with open(filename, newline='') as csvfile:
+            reader = csv.DictReader(csvfile)
+            data = collections.OrderedDict()
+            for row in reader:
+                date_time = datetime.strptime(row["date"], SoilCsv.DATE_FMT).timestamp()
+                data[date_time] = row
+            return data, list(data.keys())
 
-if __name__ == '__main__':
-    world = World(0)
-    print(world.weather.get_weather(0)[Weather.TEMP])
+    def get_soil(self, timestamp):
+        index = bisect.bisect_left(self.soil_data_keys, timestamp)
+        return self.soil_from_row(self.soil_data[self.soil_data_keys[index]])
 
-    time_test = parser.parse("Jun 1 2010  1:33PM")
-    # "01-01T01:00:00"
-    w = world.weather.get_weather(time_test.timestamp())
+    @staticmethod
+    def soil_from_row(row):
+        result = dict()
+        result[Weather.TEMP] = physics.fahrenheitDegreeToCelcius(float(row["value"]))
+        return result
 
-    a = 1
-    print(world_utils.milliseconds_convert(1000 * 10 * 60))

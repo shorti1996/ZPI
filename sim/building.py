@@ -1,13 +1,50 @@
-from sim.phisics import *
+from sim.physics import *
 from sim.world import *
+@static_vars(id=0)
+class PID(object):
+    def __init__(self, init_object, min_power, max_power):
+        self.p = init_object['p']
+        self.i = init_object['i']
+        self.d = init_object['d']
+        self.min_power = min_power
+        self.max_power = max_power
+        self.summ = 0
+        self.lerror = None
+        self.id = PID.id
+        PID.id = PID.id + 1
+
+    def getPower(self, error, delta):
+        if self.lerror is None:
+            self.lerror = error
+        self.summ = self.summ + error * delta
+        out = (self.p * error) + (self.p * self.i * self.summ) + (self.p * self.d * (error - self.lerror) / delta)
+        self.lerror = error
+        return max(min(out, self.max_power), self.min_power)
 
 
-@static_vars(counter=0)
+@static_vars(id=0)
+class Light(object):
+    def __init__(self, friendly_name):
+        self.name = friendly_name
+        self.state = False
+        self.id = Light.id
+        Light.id = Light.id + 1
+
+@static_vars(id=0)
+class HVAC(object):
+    def __init__(self, heating_power, cooling_power, controller):
+        self.id = HVAC.id
+        HVAC.id = HVAC.id + 1
+        self.heating_power = heating_power
+        self.cooling_power = cooling_power
+        self.controller = PID(controller, -cooling_power, heating_power)
+
+@static_vars(id=0)
 class Partition(object):
     def __init__(self, u, size, rooms=[]):
         self.u = u
-        self.counter = Partition.counter
-        Partition.counter += 1
+        self.id = Partition.id
+        Partition.id = Partition.id + 1
 
         # Size in meters squared
         self.size = size
@@ -20,11 +57,6 @@ class Partition(object):
         if len(self.rooms) == 0 or len(self.rooms) > 2:
             return
 
-        # Heat goes from hotter room [0] to colder [1]
-        if self.rooms[0].temperature < self.rooms[1].temperature:
-            # Swap
-            self.rooms[0], self.rooms[1] = self.rooms[1], self.rooms[0]
-
         temperatureDifference = self.rooms[0].temperature - self.rooms[1].temperature
         movingHeat = self.u * self.size * temperatureDifference * delta
 
@@ -32,19 +64,36 @@ class Partition(object):
         self.rooms[1].addHeat(movingHeat)
 
     def __cmp__(self, other):
-        return self.counter - other.counter
+        return self.id - other.id
 
-
+@static_vars(id=0)
 class Room(object):
-    def __init__(self, name, volume):
+    dummyInit = {
+        'volume': 0,
+        'lights': [],
+        'hvac': {
+            'heating_power': 0,
+            'cooling_power': 0,
+            'controller': {
+                'p': 0,
+                'i': 0,
+                'd': 0,
+            },
+        },
+    }
+
+    def __init__(self, name, init_object=dummyInit):
+        self.id = Room.id
+        Room.id = Room.id + 1
         self.name = name
-        self.volume = volume
+        self.volume = init_object['volume']
         self.sensors = []
         self.utilities = []
         self.partitions = []
-        self._temperature = 0
-        self._setTemperature = 0
-        self.light = False
+        self._temperature = 20
+        self._setTemperature = 24
+        self.lights = {obj.id: obj for obj in list(map(lambda light: Light(light), init_object['lights']))}
+        self.hvac = HVAC(init_object['hvac']['heating_power'], init_object['hvac']['cooling_power'], init_object['hvac']['controller'])
 
     @property
     def temperature(self):
@@ -58,20 +107,32 @@ class Room(object):
     def temperature(self, value):
         self._setTemperature = value
 
+    @property
+    def light(self):
+        return self._light
+
+    @light.setter
+    def light(self, value):
+        self._light = value
+
     def addHeat(self, energy):
         # Recalculate temperature
         world = World()
-        self._temperature += energy / (MaterialDensity['air'](self.temperature, world.pressure) * self.volume * SpecificHeats['air'])
+        self._temperature += energy / (MaterialDensity['air'](physics.celciusDegreeToKelvin(self.temperature),
+                                                              world.pressure) * self.volume * SpecificHeats['air'])
 
 
 class OutsideRoom(Room):
     def __init__(self, name):
-        Room.__init__(self, name, 1)
+        Room.__init__(self, name)
+        self._temperature = 0
+        self._setTemperature = 0
+        self.isSystem = True
 
     @property
     def temperature(self):
-        # TODO(mkarol) Get outside temperature on given moment of simulation
-        return self._temperature
+        world = World()
+        return world.weather.get_weather(world.state.timestamp)[Weather.TEMP]
 
     @temperature.setter
     def temperature(self, value):
@@ -80,14 +141,18 @@ class OutsideRoom(Room):
     def addHeat(self, energy):
         pass
 
+
 class GroundRoom(Room):
     def __init__(self, name):
-        Room.__init__(self, name, 1)
+        Room.__init__(self, name)
+        self._temperature = 0
+        self._setTemperature = 0
+        self.isSystem = True
 
     @property
     def temperature(self):
-        # TODO(mkarol) Get ground temperature on given moment of simulation
-        return self._temperature
+        world = World()
+        return world.soil.get_soil(world.state.timestamp)[Soil.TEMP]
 
     @property
     def setTemperature(self):
@@ -114,56 +179,152 @@ def generateBuilding():
     roomsInitMap = {
         '0-Area1': {
             'volume': 421.23,
+            'lights': ['Glowne oswietlenie', 'Glowne oswietlenie', 'Lampka na biurku', 'Kinkiet'],
+            'hvac': {
+                'heating_power': 3200,
+                'cooling_power': 2500,
+                'controller': {
+                    'p': 1,
+                    'i': 0,
+                    'd': 0,
+                },
+            },
         },
         '0-Area2': {
             'volume': 16.87,
+            'lights': [],
+            'hvac': {
+                'heating_power': 3200,
+                'cooling_power': 2500,
+                'controller': {
+                    'p': 1,
+                    'i': 0,
+                    'd': 0,
+                },
+            },
         },
         '0-Area3': {
             'volume': 59.26,
+            'lights': [],
+            'hvac': {
+                'heating_power': 3200,
+                'cooling_power': 2500,
+                'controller': {
+                    'p': 1,
+                    'i': 0,
+                    'd': 0,
+                },
+            },
         },
         '0-Area4': {
             'volume': 39.80,
+            'lights': [],
+            'hvac': {
+                'heating_power': 3200,
+                'cooling_power': 2500,
+                'controller': {
+                    'p': 1,
+                    'i': 0,
+                    'd': 0,
+                },
+            },
         },
         '0-Area5': {
             'volume': 20.252,
+            'lights': [],
+            'hvac': {
+                'heating_power': 3200,
+                'cooling_power': 2500,
+                'controller': {
+                    'p': 1,
+                    'i': 0,
+                    'd': 0,
+                },
+            },
         },
         '1-Area1': {
             'volume': 65.79,
+            'lights': [],
+            'hvac': {
+                'heating_power': 3200,
+                'cooling_power': 2500,
+                'controller': {
+                    'p': 1,
+                    'i': 0,
+                    'd': 0,
+                },
+            },
         },
         '1-Area2': {
             'volume': 83.04,
+            'lights': [],
+            'hvac': {
+                'heating_power': 3200,
+                'cooling_power': 2500,
+                'controller': {
+                    'p': 1,
+                    'i': 0,
+                    'd': 0,
+                },
+            },
         },
         '1-Area3': {
             'volume': 42.00,
+            'lights': [],
+            'hvac': {
+                'heating_power': 3200,
+                'cooling_power': 2500,
+                'controller': {
+                    'p': 1,
+                    'i': 0,
+                    'd': 0,
+                },
+            },
         },
         '1-Area4': {
             'volume': 38.43,
+            'lights': [],
+            'hvac': {
+                'heating_power': 3200,
+                'cooling_power': 2500,
+                'controller': {
+                    'p': 1,
+                    'i': 0,
+                    'd': 0,
+                },
+            },
         },
         '1-Area5': {
             'volume': 63.07,
+            'lights': [],
+            'hvac': {
+                'heating_power': 3200,
+                'cooling_power': 2500,
+                'controller': {
+                    'p': 1,
+                    'i': 0,
+                    'd': 0,
+                },
+            },
         },
     }
     roomsObjectMap = {}
     rooms = []
 
-    outside = OutsideRoom('Outside')
-    roomsObjectMap['Outside'] = outside
-    rooms.append(outside)
-
-    ground = GroundRoom('Ground')
-    roomsObjectMap['Ground'] = ground
-    rooms.append(ground)
-
-    for key in roomsInitMap:
-        room = Room(key, roomsInitMap[key]['volume'])
+    for key, description in roomsInitMap.items():
+        room = Room(key, description)
         roomsObjectMap[key] = room
-
         rooms.append(room)
 
     building.rooms = rooms
 
-    roomsObjectMap['0-Area1'].addHeat(1000000)
-    print(roomsObjectMap['0-Area1'].temperature)
+    outside = OutsideRoom('Outside')
+    roomsObjectMap['Outside'] = outside
+    building.outside = outside
+
+    ground = GroundRoom('Ground')
+    roomsObjectMap['Ground'] = ground
+    building.ground = ground
 
     # 0-Area1
     Partition(u=0.122, size=50.53, rooms=[roomsObjectMap['0-Area1'], roomsObjectMap['Outside']])

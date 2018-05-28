@@ -32,7 +32,7 @@ def addPlotingBuilding(state):
             subplots[i, 0].plot(xData, subplotsData[i][0], color='red')
 
             subplots[i, 1].clear()
-            subplotsData[i][1].append(state.building.rooms[i].light)
+            subplotsData[i][1].append(sum(map(lambda light: 1 if light.state else 0, state.building.rooms[i].lights.values())))
             subplots[i, 1].set_title(state.building.rooms[i].name)
             subplots[i, 1].set_xlabel('time')
             subplots[i, 1].set_ylabel('light')

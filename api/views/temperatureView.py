@@ -8,11 +8,11 @@ class HouseTemperatureView(generics.RetrieveAPIView):
     @api_permission(['User'])
     def get(self, request, *args, **kwargs):
         world = World()
-        localBuilding = world.state.building
+        localBuildingRooms = world.state.building.rooms
 
-        avgRoomTemps = sum(map(lambda room: room.temperature, localBuilding.rooms)) / len(localBuilding.rooms)
+        avgRoomTemps = sum(map(lambda room: room.temperature, localBuildingRooms)) / len(localBuildingRooms)
+
         obj = dict()
-
         obj['houseTemperature'] = avgRoomTemps
 
         return JsonResponse(obj)
@@ -51,42 +51,7 @@ class TemperatureView(generics.RetrieveUpdateAPIView):
         temperature = int(request.data['setTemperature'])
         room = localBuilding.rooms[roomId]
 
-        print(temperature)
-        print(room.setTemperature)
         room.temperature = temperature
-        print(room.temperature)
-        print(room.setTemperature)
         world.state.building = localBuilding
 
         return HttpResponse('', status=200)
-
-
-class HouseTemperatureHistoryView(generics.RetrieveAPIView):
-    @api_permission(['User'])
-    def get(self, request, *args, **kwargs):
-        obj = dict()
-
-        if 'nlast' not in kwargs:
-            return HttpResponseNotFound('<h1>Number of elements is out of range</h1>')
-
-        obj['temperatureHistory'] = [randrange(0, 10) for i in range(0, kwargs['nlast'])]
-
-        return JsonResponse(obj)
-
-class TemperatureHistoryView(generics.RetrieveAPIView):
-    @api_permission(['User'])
-    def get(self, request, *args, **kwargs):
-        world = World()
-        localBuilding = world.state.building
-
-        if 'roomId' not in kwargs or kwargs['roomId'] > len(localBuilding.rooms) - 1:
-            return HttpResponseNotFound('<h1>Room number is out of range</h1>')
-
-        if 'nlast' not in kwargs:
-            return HttpResponseNotFound('<h1>Number of elements is out of range</h1>')
-
-        obj = dict()
-        obj['roomId'] = kwargs['roomId']
-        obj['temperatureHistory'] = [randrange(0, 10) for i in range(0, kwargs['nlast'])]
-
-        return JsonResponse(obj)
