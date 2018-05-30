@@ -11,10 +11,10 @@ class HouseLightView(generics.RetrieveAPIView):
         world = World()
         localBuilding = world.state.building
 
-        print(localBuilding.rooms[0].light)
-        sumLights = sum(map(lambda room: 1 if room.light else 0, localBuilding.rooms))
-        obj = dict()
-        obj['houseTurnedLights'] = sumLights
+        obj = {
+            'houseTurnedLights': sum(map(lambda room: sum(map(lambda light: 1 if light.state else 0, room.lights.values())), localBuilding.rooms)),
+            'lights': list(map(lambda room: list(map(lambda light: {'id': light.id, 'name': light.name, 'state': light.state}, room.lights.values())), localBuilding.rooms)),
+        }
 
         return JsonResponse(obj)
 
@@ -31,9 +31,10 @@ class LightView(generics.RetrieveUpdateAPIView):
         roomId = kwargs['roomId']
         room = localBuilding.rooms[roomId]
 
-        obj = dict()
-        obj['roomId'] = roomId
-        obj['light'] = room.light
+        obj = {
+            'roomId': roomId,
+            'lights': list(map(lambda light: {'id': light.id, 'name': light.name, 'state': light.state}, room.lights.values())),
+        }
 
         return JsonResponse(obj)
 
@@ -45,49 +46,23 @@ class LightView(generics.RetrieveUpdateAPIView):
         if 'roomId' not in kwargs or kwargs['roomId'] > len(localBuilding.rooms) - 1:
             return HttpResponseNotFound('<h1>Room number is out of range</h1>')
 
-        if 'setLight' not in request.data or request.data['setLight'] not in ['true', 'false']:
-            return HttpResponseBadRequest('<h1>Set light state out of range</h1>')
+        if 'lightId' not in request.query_params:
+            return HttpResponseBadRequest('<h1>Bad light id</h1>')
+
+        if 'state' not in request.query_params:
+            return HttpResponseBadRequest('<h1>Bad light state</h1>')
 
         roomId = kwargs['roomId']
-        state = request.data['setLight'] == 'true'
+        state = request.query_params['state'] == 'true'
         room = localBuilding.rooms[roomId]
 
-        room.light = state
+        lightId = request.query_params['lightId']
+        light = room.lights[int(lightId)]
+
+        if not light:
+            return HttpResponseBadRequest('<h1>Bad light id</h1>')
+
+        light.state = state
         world.state.building = localBuilding
 
         return HttpResponse('', status=200)
-
-
-class HouseLightHistoryView(generics.RetrieveAPIView):
-    @api_permission(['User'])
-    def get(self, request, *args, **kwargs):
-
-        if 'nlast' not in kwargs:
-            return HttpResponseNotFound('<h1>Number of elements is out of range</h1>')
-
-        obj = dict()
-        obj['lightHistory'] = [bool(getrandbits(1)) for i in range(0, kwargs['nlast'])]
-
-        return JsonResponse(obj)
-
-
-class LightHistoryView(generics.RetrieveAPIView):
-    @api_permission(['User'])
-    def get(self, request, *args, **kwargs):
-        world = World()
-        localBuilding = world.state.building
-
-        if 'roomId' not in kwargs or kwargs['roomId'] > len(localBuilding.rooms) - 1:
-            return HttpResponseNotFound('<h1>Room number is out of range</h1>')
-
-        if 'nlast' not in kwargs:
-            return HttpResponseNotFound('<h1>Number of elements is out of range</h1>')
-
-        obj = dict()
-        obj['roomId'] = kwargs['roomId']
-        obj['lightHistory'] = [bool(getrandbits(1)) for i in range(0, kwargs['nlast'])]
-
-        return JsonResponse(obj)
-
-
-
