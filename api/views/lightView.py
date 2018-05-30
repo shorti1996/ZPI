@@ -9,11 +9,10 @@ class HouseLightView(generics.RetrieveAPIView):
     @api_permission(['User'])
     def get(self, request, *args, **kwargs):
         world = World()
-        localBuilding = world.state.building
 
         obj = {
-            'houseTurnedLights': sum(map(lambda room: sum(map(lambda light: 1 if light.state else 0, room.lights.values())), localBuilding.rooms)),
-            'lights': list(map(lambda room: list(map(lambda light: {'id': light.id, 'name': light.name, 'state': light.state}, room.lights.values())), localBuilding.rooms)),
+            'houseTurnedLights': sum(map(lambda room: sum(map(lambda light: 1 if light.state else 0, room.lights.values())), world.state.building.rooms)),
+            'lights': list(map(lambda room: list(map(lambda light: {'id': light.id, 'name': light.name, 'state': light.state}, room.lights.values())), world.state.building.rooms)),
         }
 
         return JsonResponse(obj)
@@ -23,13 +22,12 @@ class LightView(generics.RetrieveUpdateAPIView):
     @api_permission(['User'])
     def get(self, request, *args, **kwargs):
         world = World()
-        localBuilding = world.state.building
 
-        if 'roomId' not in kwargs or kwargs['roomId'] > len(localBuilding.rooms) - 1:
+        if 'roomId' not in kwargs or kwargs['roomId'] > len(world.state.building.rooms) - 1:
             return HttpResponseNotFound('<h1>Room number is out of range</h1>')
 
         roomId = kwargs['roomId']
-        room = localBuilding.rooms[roomId]
+        room = world.state.building.rooms[roomId]
 
         obj = {
             'roomId': roomId,

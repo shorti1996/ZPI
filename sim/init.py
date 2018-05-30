@@ -18,12 +18,12 @@ def createSimulation(state):
     # Way of keeping constant FPS
     FPS = 1
     delta = 1 / FPS
-    start = time.time()
-    simulation.step(delta)
-    controller.step(state, delta)
+    # start = time.time()
+    # simulation.step(delta)
+    # controller.step(state, delta)
     # animatingFunction()
-    end = time.time()
-    sleepInterval = (1 / FPS) - (start - end)
+    # end = time.time()
+    # sleepInterval = (1 / FPS) - (start - end)
     counter = 1
 
     while 1:
@@ -57,6 +57,11 @@ def createSimulation(state):
             TemperatureHistory.objects.create(timestamp=state.timestamp, room_id=state.building.outside.id,
                                               value=state.building.outside.temperature)
 
+            # Clearing history
+            TemperatureHistory.objects.filter(timestamp__lte=state.timestamp - 1800).delete()
+            LightHistory.objects.filter(timestamp__lte=state.timestamp - 1800).delete()
+            PowerHistory.objects.filter(timestamp__lte=state.timestamp - 1800).delete()
+
             # animatingFunction()
 
             # Power calcuations
@@ -65,15 +70,11 @@ def createSimulation(state):
                 for light in room.lights.values():
                     light.summedPower = 0
 
-
-        # Every 3600 simulation second clear history and clear counter
+        # Every 3600 simulation second clear counter
         if counter % (3600 * FPS) == 0:
-            TemperatureHistory.objects.filter(timestamp__lt=state.timestamp - 100).delete()
-            LightHistory.objects.filter(timestamp__lt=state.timestamp - 100).delete()
-            PowerHistory.objects.filter(timestamp__lt=state.timestamp - 100).delete()
             counter = 0
 
-        time.sleep(sleepInterval)
+        time.sleep(0.001)
 
 
 def startController():
