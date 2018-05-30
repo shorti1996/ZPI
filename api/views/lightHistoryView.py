@@ -30,7 +30,7 @@ class LightHistoryView(generics.RetrieveAPIView):
         world = World()
         localBuilding = world.state.building
 
-        if 'roomId' not in kwargs or kwargs['roomId'] > len(localBuilding.rooms) - 3:
+        if 'roomId' not in kwargs or kwargs['roomId'] > len(localBuilding.rooms) - 1:
             return HttpResponseNotFound('<h1>Room number is out of range</h1>')
 
         if 'lightId' not in request.query_params:

@@ -13,6 +13,8 @@ class Controller(object):
         for i in range(0, len(localBuilding.rooms)):
             room = localBuilding.rooms[i]
             energyError = (room.setTemperature - room.temperature) * (MaterialDensity['air'](celciusDegreeToKelvin(room.temperature), world.pressure) * room.volume * SpecificHeats['air'])
-            room.addHeat(room.hvac.controller.getPower(energyError, delta))
+            power = room.hvac.controller.getPower(energyError, delta)
+            room.hvac.power = abs(power)
+            room.addHeat(power)
 
         state.building = localBuilding

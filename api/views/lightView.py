@@ -63,6 +63,7 @@ class LightView(generics.RetrieveUpdateAPIView):
             return HttpResponseBadRequest('<h1>Bad light id</h1>')
 
         light.state = state
+
         world.state.building = localBuilding
 
         return HttpResponse('', status=200)
