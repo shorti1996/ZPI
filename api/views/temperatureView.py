@@ -4,6 +4,7 @@ from random import randrange
 from sim.world import *
 from api.api_permission import *
 
+
 class HouseTemperatureView(generics.RetrieveAPIView):
     @api_permission(['User'])
     def get(self, request, *args, **kwargs):
@@ -14,6 +15,20 @@ class HouseTemperatureView(generics.RetrieveAPIView):
         }
 
         return JsonResponse(obj)
+
+
+class OutsideTemperatureView(generics.RetrieveAPIView):
+    @api_permission(['User'])
+    def get(self, request, *args, **kwargs):
+        world = World()
+
+        obj = {
+            'temperature': world.state.building.outside.temperature,
+        }
+
+        return JsonResponse(obj)
+
+
 
 class TemperatureView(generics.RetrieveUpdateAPIView):
     @api_permission(['User'])

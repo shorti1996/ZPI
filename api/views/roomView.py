@@ -11,9 +11,14 @@ class RoomView(generics.RetrieveAPIView):
         world = World()
 
         obj = {
-            'rooms': list(map(lambda room: {'roomId': room.id, 'name': room.name}, world.state.building.rooms))
+            'rooms': list(map(lambda room: {
+                'roomId': room.id,
+                'name': room.name,
+                'hasAccess': (User.objects.get(username=request.user).groups.filter(name='Owner').exists()),
+            }, world.state.building.rooms)),
         }
         return JsonResponse(obj)
+
 
 class RoomDetailView(generics.RetrieveAPIView):
     @api_permission(['User'])
@@ -30,6 +35,7 @@ class RoomDetailView(generics.RetrieveAPIView):
             'roomId': roomId,
             'roomName': room.name,
             'roomVolume': room.volume,
+            'hasAccess': (User.objects.get(username=request.user).groups.filter(name='Owner').exists()),
         }
 
         return JsonResponse(obj)

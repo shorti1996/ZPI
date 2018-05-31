@@ -23,17 +23,34 @@ class HouseTemperatureHistoryView(generics.RetrieveAPIView):
                                                 filter(lambda temperature: temperature.timestamp == timestamp, temperatureObjects))) / len(list(filter(lambda temperature: temperature.timestamp == timestamp, temperatureObjects))),
                                            timestamps)),
         }
-
-
         return JsonResponse(obj)
+
+
+class OutsideTemperatureHistoryView(generics.RetrieveAPIView):
+    @api_permission(['User'])
+    def get(self, request, *args, **kwargs):
+        world = World()
+
+        if 'nlast' not in kwargs:
+            return HttpResponseNotFound('<h1>Number of elements is out of range</h1>')
+
+        timestamps = list(reversed(list(map(lambda value: value['timestamp'],
+                              TemperatureHistory.objects.filter(room_id=world.state.building.outside.id).order_by('-timestamp').values('timestamp').distinct()[:kwargs['nlast']]))))
+
+        temperatureObjects = TemperatureHistory.objects.filter(timestamp__in=timestamps, room_id=world.state.building.outside.id)
+
+        obj = {
+            'temperatureHistory': list(map(lambda timestamp: list(filter(lambda temperature: temperature.timestamp == timestamp, temperatureObjects))[0].value, timestamps)),
+        }
+        return JsonResponse(obj)
+
 
 class TemperatureHistoryView(generics.RetrieveAPIView):
     @api_permission(['User'])
     def get(self, request, *args, **kwargs):
         world = World()
-        localBuilding = world.state.building
 
-        if 'roomId' not in kwargs or kwargs['roomId'] > len(localBuilding.rooms) - 1:
+        if 'roomId' not in kwargs or kwargs['roomId'] > len(world.state.building.rooms) - 1:
             return HttpResponseNotFound('<h1>Room number is out of range</h1>')
 
         if 'nlast' not in kwargs:

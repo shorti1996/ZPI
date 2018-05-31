@@ -58,9 +58,9 @@ def createSimulation(state):
                                               value=state.building.outside.temperature)
 
             # Clearing history
-            TemperatureHistory.objects.filter(timestamp__lte=state.timestamp - 1800).delete()
-            LightHistory.objects.filter(timestamp__lte=state.timestamp - 1800).delete()
-            PowerHistory.objects.filter(timestamp__lte=state.timestamp - 1800).delete()
+            # TemperatureHistory.objects.filter(timestamp__lte=state.timestamp - 1800).delete()
+            # LightHistory.objects.filter(timestamp__lte=state.timestamp - 1800).delete()
+            # PowerHistory.objects.filter(timestamp__lte=state.timestamp - 1800).delete()
 
             # animatingFunction()
 

@@ -15,9 +15,11 @@ urlpatterns = [
     path(r'light/<int:roomId>/history/<int:nlast>', LightHistoryView.as_view()),
 
     path(r'temp', HouseTemperatureView.as_view()),
+    path(r'temp/outside', OutsideTemperatureView.as_view()),
     path(r'temp/<int:roomId>', TemperatureView.as_view()),
 
     path(r'temp/history/<int:nlast>', HouseTemperatureHistoryView.as_view()),
+    path(r'temp/outside/history/<int:nlast>', OutsideTemperatureHistoryView.as_view()),
     path(r'temp/<int:roomId>/history/<int:nlast>', TemperatureHistoryView.as_view()),
 
     path(r'power', HousePowerView.as_view()),
