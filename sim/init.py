@@ -9,21 +9,14 @@ from sim.models import TemperatureHistory, LightHistory, PowerHistory
 import time
 
 
-def createSimulation(state):
-    simulation = Simulation(state)
-    controller = Controller(state)
-
-    # animatingFunction = addPlotingBuilding()
+def createSimulation(state, lock):
+    simulation = Simulation(state, lock)
+    controller = Controller(state, lock)
+    animatingFunction = addPlotingBuilding()
 
     # Way of keeping constant FPS
     FPS = 1
     delta = 1 / FPS
-    # start = time.time()
-    # simulation.step(delta)
-    # controller.step(state, delta)
-    # animatingFunction()
-    # end = time.time()
-    # sleepInterval = (1 / FPS) - (start - end)
     counter = 1
 
     while 1:
@@ -32,6 +25,7 @@ def createSimulation(state):
         simulation.step(delta)
         controller.step(state, delta)
 
+        lock.acquire()
         localBuilding = state.building
         # Power calcuations
         for room in localBuilding.rooms:
@@ -39,6 +33,7 @@ def createSimulation(state):
             for light in room.lights.values():
                 light.summedPower = light.summedPower + light.power/delta
         state.building = localBuilding
+        lock.release()
 
         # Every FPS add second to timestamp
         if counter % FPS == 0:
@@ -62,19 +57,21 @@ def createSimulation(state):
             # LightHistory.objects.filter(timestamp__lte=state.timestamp - 1800).delete()
             # PowerHistory.objects.filter(timestamp__lte=state.timestamp - 1800).delete()
 
-            # animatingFunction()
+            animatingFunction()
 
             # Power calcuations
-            for room in state.building.rooms:
+            lock.acquire()
+            localBuilding = state.building
+            for room in localBuilding.rooms:
                 room.hvac.summedPower = 0
                 for light in room.lights.values():
                     light.summedPower = 0
+            state.building = localBuilding
+            lock.release()
 
         # Every 3600 simulation second clear counter
         if counter % (3600 * FPS) == 0:
             counter = 0
-
-        time.sleep(0.001)
 
 
 def startController():
@@ -88,6 +85,7 @@ def startController():
     # 01.01.2017
     state.timestamp = 1483228800
     world.state = state
+    world.lock = Lock()
 
     # Clear history
     TemperatureHistory.objects.all().delete()
@@ -95,7 +93,7 @@ def startController():
     PowerHistory.objects.all().delete()
 
     # Create simulation
-    process = Process(target=createSimulation, args=[world.state])
+    process = Process(target=createSimulation, args=[world.state, world.lock])
     process.start()
 
 

@@ -29,9 +29,8 @@ class PowerHistoryView(generics.RetrieveAPIView):
     @api_permission(['User'])
     def get(self, request, *args, **kwargs):
         world = World()
-        localBuilding = world.state.building
 
-        if 'roomId' not in kwargs or kwargs['roomId'] > len(localBuilding.rooms) - 1:
+        if 'roomId' not in kwargs or kwargs['roomId'] > len(world.state.building.rooms) - 1:
             return HttpResponseNotFound('<h1>Room number is out of range</h1>')
 
         if 'nlast' not in kwargs:

@@ -51,9 +51,8 @@ class TemperatureView(generics.RetrieveUpdateAPIView):
     @api_permission(['Owner'])
     def put(self, request, *args, **kwargs):
         world = World()
-        localBuilding = world.state.building
 
-        if 'roomId' not in kwargs or kwargs['roomId'] > len(localBuilding.rooms) - 1:
+        if 'roomId' not in kwargs or kwargs['roomId'] > len(world.state.building.rooms) - 1:
             return HttpResponseNotFound('<h1>Room number is out of range</h1>')
 
         if 'setTemperature' not in request.data or not 10 <= int(request.data['setTemperature']) <= 35:
@@ -61,9 +60,12 @@ class TemperatureView(generics.RetrieveUpdateAPIView):
 
         roomId = kwargs['roomId']
         temperature = int(request.data['setTemperature'])
-        room = localBuilding.rooms[roomId]
 
+        world.lock.acquire()
+        localBuilding = world.state.building
+        room = localBuilding.rooms[roomId]
         room.temperature = temperature
         world.state.building = localBuilding
+        world.lock.release()
 
         return HttpResponse('', status=200)
