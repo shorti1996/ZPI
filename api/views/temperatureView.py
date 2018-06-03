@@ -10,9 +10,11 @@ class HouseTemperatureView(generics.RetrieveAPIView):
     def get(self, request, *args, **kwargs):
         world = World()
 
+        world.lock.acquire()
         obj = {
             'houseTemperature': sum(map(lambda room: room.temperature, world.state.building.rooms)) / len(world.state.building.rooms)
         }
+        world.lock.release()
 
         return JsonResponse(obj)
 
@@ -41,11 +43,14 @@ class TemperatureView(generics.RetrieveUpdateAPIView):
         roomId = kwargs['roomId']
         room = world.state.building.rooms[roomId]
 
+        world.lock.acquire()
         obj = {
             'roomId': kwargs['roomId'],
             'temperature': room.temperature,
             'setTemperature': room.setTemperature
         }
+        world.lock.release()
+
         return JsonResponse(obj)
 
     @api_permission(['Owner'])

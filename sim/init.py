@@ -2,7 +2,7 @@ from sim.world import *
 from sim.building import *
 from sim.simulation import *
 from sim.controller import *
-from multiprocessing import Process, Manager, Lock
+from threading import Thread, Lock
 from sim.world_utils import *
 from sim.models import TemperatureHistory, LightHistory, PowerHistory
 
@@ -12,7 +12,7 @@ import time
 def createSimulation(state, lock):
     simulation = Simulation(state, lock)
     controller = Controller(state, lock)
-    animatingFunction = addPlotingBuilding()
+    # animatingFunction = addPlotingBuilding()
 
     # Way of keeping constant FPS
     FPS = 1
@@ -57,7 +57,7 @@ def createSimulation(state, lock):
             # LightHistory.objects.filter(timestamp__lte=state.timestamp - 1800).delete()
             # PowerHistory.objects.filter(timestamp__lte=state.timestamp - 1800).delete()
 
-            animatingFunction()
+            # animatingFunction()
 
             # Power calcuations
             lock.acquire()
@@ -79,8 +79,12 @@ def startController():
     building = generateBuilding()
 
     # Create state
-    manager = Manager()
-    state = manager.Namespace()
+    # manager = Manager()
+    # state = manager.Namespace()
+    class Dummy(object):
+        pass
+
+    state = Dummy
     state.building = building
     # 01.01.2017
     state.timestamp = 1483228800
@@ -93,7 +97,7 @@ def startController():
     PowerHistory.objects.all().delete()
 
     # Create simulation
-    process = Process(target=createSimulation, args=[world.state, world.lock])
+    process = Thread(target=createSimulation, args=[world.state, world.lock])
     process.start()
 
 

@@ -9,11 +9,13 @@ class HouseLightView(generics.RetrieveAPIView):
     @api_permission(['User'])
     def get(self, request, *args, **kwargs):
         world = World()
+        world.lock.acquire()
 
         obj = {
             'houseTurnedLights': sum(map(lambda room: sum(map(lambda light: 1 if light.state else 0, room.lights.values())), world.state.building.rooms)),
             'lights': list(map(lambda room: list(map(lambda light: {'id': light.id, 'name': light.name, 'state': light.state}, room.lights.values())), world.state.building.rooms)),
         }
+        world.lock.release()
 
         return JsonResponse(obj)
 
@@ -29,10 +31,12 @@ class LightView(generics.RetrieveUpdateAPIView):
         roomId = kwargs['roomId']
         room = world.state.building.rooms[roomId]
 
+        world.lock.acquire()
         obj = {
             'roomId': roomId,
             'lights': list(map(lambda light: {'id': light.id, 'name': light.name, 'state': light.state}, room.lights.values())),
         }
+        world.lock.release()
 
         return JsonResponse(obj)
 
