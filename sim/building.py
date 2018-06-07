@@ -24,11 +24,17 @@ class PID(object):
 
 @static_vars(id=0)
 class Light(object):
-    def __init__(self, friendly_name):
+    def __init__(self, friendly_name, power):
         self.name = friendly_name
         self.state = False
         self.id = Light.id
+        self._power = power
+        self.summedPower = 0
         Light.id = Light.id + 1
+
+    @property
+    def power(self):
+        return self._power if self.state else 0
 
 @static_vars(id=0)
 class HVAC(object):
@@ -38,6 +44,7 @@ class HVAC(object):
         self.heating_power = heating_power
         self.cooling_power = cooling_power
         self.controller = PID(controller, -cooling_power, heating_power)
+        self.summedPower = 0
 
 @static_vars(id=0)
 class Partition(object):
@@ -92,7 +99,7 @@ class Room(object):
         self.partitions = []
         self._temperature = 20
         self._setTemperature = 24
-        self.lights = {obj.id: obj for obj in list(map(lambda light: Light(light), init_object['lights']))}
+        self.lights = {obj.id: obj for obj in list(map(lambda light_data: Light(light_data['name'], light_data['power']), init_object['lights']))}
         self.hvac = HVAC(init_object['hvac']['heating_power'], init_object['hvac']['cooling_power'], init_object['hvac']['controller'])
 
     @property
@@ -179,7 +186,24 @@ def generateBuilding():
     roomsInitMap = {
         '0-Area1': {
             'volume': 421.23,
-            'lights': ['Glowne oswietlenie', 'Glowne oswietlenie', 'Lampka na biurku', 'Kinkiet'],
+            'lights': [
+                            {
+                                'name': 'Glowne oswietlenie',
+                                'power': 60,
+                            },
+                            {
+                                'name': 'Glowne oswietlenie',
+                                'power': 60,
+                            },
+                            {
+                                'name': 'Lampka na biurku',
+                                'power': 20,
+                            },
+                            {
+                                'name': 'Kinkiet',
+                                'power': 40,
+                            },
+                        ],
             'hvac': {
                 'heating_power': 3200,
                 'cooling_power': 2500,

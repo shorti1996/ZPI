@@ -1,11 +1,12 @@
 class Simulation(object):
 
-    def __init__(self, state):
+    def __init__(self, state, lock):
         self.state = state
+        self.lock = lock
 
     def step(self, delta):
+        self.lock.acquire()
         localBuilding = self.state.building
-
         # Temperature calcuations
         partitions = set()
         for room in localBuilding.rooms:
@@ -15,5 +16,6 @@ class Simulation(object):
             partition.recalculateTemperatures(delta)
 
         self.state.building = localBuilding
+        self.lock.release()
 
 

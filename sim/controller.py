@@ -2,17 +2,22 @@ from sim.world import *
 from sim.physics import *
 
 class Controller(object):
-    def __init__(self, building):
-        self.building = building
+    def __init__(self, state, lock):
+        self.state = state
+        self.lock = lock
 
 
     def step(self, state, delta):
         world = World()
-        localBuilding = state.building
+        self.lock.acquire()
+        localBuilding = self.state.building
 
         for i in range(0, len(localBuilding.rooms)):
             room = localBuilding.rooms[i]
             energyError = (room.setTemperature - room.temperature) * (MaterialDensity['air'](celciusDegreeToKelvin(room.temperature), world.pressure) * room.volume * SpecificHeats['air'])
-            room.addHeat(room.hvac.controller.getPower(energyError, delta))
+            power = room.hvac.controller.getPower(energyError, delta)
+            room.hvac.power = abs(power)
+            room.addHeat(power)
 
-        state.building = localBuilding
+        self.state.building = localBuilding
+        self.lock.release()

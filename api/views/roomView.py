@@ -9,29 +9,33 @@ class RoomView(generics.RetrieveAPIView):
     @api_permission(['User'])
     def get(self, request, *args, **kwargs):
         world = World()
-        localBuilding = world.state.building
 
         obj = {
-            'rooms': list(map(lambda room: {'roomId': room.id, 'name': room.name}, localBuilding.rooms))
+            'rooms': list(map(lambda room: {
+                'roomId': room.id,
+                'name': room.name,
+                'hasAccess': (User.objects.get(username=request.user).groups.filter(name='Owner').exists()),
+            }, world.state.building.rooms)),
         }
         return JsonResponse(obj)
+
 
 class RoomDetailView(generics.RetrieveAPIView):
     @api_permission(['User'])
     def get(self, request, *args, **kwargs):
         world = World()
-        localBuilding = world.state.building
 
-        if 'roomId' not in kwargs or kwargs['roomId'] > len(localBuilding.rooms) - 1:
+        if 'roomId' not in kwargs or kwargs['roomId'] > len(world.state.building.rooms) - 1:
             return HttpResponseNotFound('<h1>Room number is out of range</h1>')
 
         roomId = kwargs['roomId']
-        room = localBuilding.rooms[roomId]
+        room = world.state.building.rooms[roomId]
 
         obj = {
             'roomId': roomId,
             'roomName': room.name,
             'roomVolume': room.volume,
+            'hasAccess': (User.objects.get(username=request.user).groups.filter(name='Owner').exists()),
         }
 
         return JsonResponse(obj)

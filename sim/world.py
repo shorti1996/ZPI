@@ -67,8 +67,9 @@ class WeatherCsv(Weather):
 
     @staticmethod
     def weather_from_row(row):
-        result = dict()
-        result[Weather.TEMP] = physics.fahrenheitDegreeToCelcius(float(row["HLY-TEMP-NORMAL"]))
+        result = {
+            Weather.TEMP: physics.fahrenheitDegreeToCelcius(float(row["HLY-TEMP-NORMAL"])),
+        }
         return result
 
 
@@ -104,7 +105,8 @@ class SoilCsv(Soil):
 
     @staticmethod
     def soil_from_row(row):
-        result = dict()
-        result[Weather.TEMP] = physics.fahrenheitDegreeToCelcius(float(row["value"]))
+        result = {
+            Soil.TEMP: physics.fahrenheitDegreeToCelcius(float(row["value"]))
+        }
         return result
 
