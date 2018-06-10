@@ -184,7 +184,7 @@ def generateBuilding():
     building = Building()
 
     roomsInitMap = {
-        '0-Area1': {
+        'Kuchnia, salon, korytarz': {
             'volume': 421.23,
             'lights': [
                             {
@@ -214,7 +214,7 @@ def generateBuilding():
                 },
             },
         },
-        '0-Area2': {
+        'Lazienka': {
             'volume': 16.87,
             'lights': [],
             'hvac': {
@@ -227,7 +227,7 @@ def generateBuilding():
                 },
             },
         },
-        '0-Area3': {
+        'Gabinet': {
             'volume': 59.26,
             'lights': [],
             'hvac': {
@@ -240,7 +240,7 @@ def generateBuilding():
                 },
             },
         },
-        '0-Area4': {
+        'Wiatrolap, garderoba': {
             'volume': 39.80,
             'lights': [],
             'hvac': {
@@ -253,7 +253,7 @@ def generateBuilding():
                 },
             },
         },
-        '0-Area5': {
+        'Pom. gospodarcze': {
             'volume': 20.252,
             'lights': [],
             'hvac': {
@@ -266,7 +266,7 @@ def generateBuilding():
                 },
             },
         },
-        '1-Area1': {
+        'Pokoj dziecka 1': {
             'volume': 65.79,
             'lights': [],
             'hvac': {
@@ -279,7 +279,7 @@ def generateBuilding():
                 },
             },
         },
-        '1-Area2': {
+        'Pokoj dziecka 2': {
             'volume': 83.04,
             'lights': [],
             'hvac': {
@@ -292,7 +292,7 @@ def generateBuilding():
                 },
             },
         },
-        '1-Area3': {
+        'Korytarz': {
             'volume': 42.00,
             'lights': [],
             'hvac': {
@@ -305,7 +305,7 @@ def generateBuilding():
                 },
             },
         },
-        '1-Area4': {
+        'Lazienka, pralnia': {
             'volume': 38.43,
             'lights': [],
             'hvac': {
@@ -318,7 +318,7 @@ def generateBuilding():
                 },
             },
         },
-        '1-Area5': {
+        'Sypialnia, garderoba': {
             'volume': 63.07,
             'lights': [],
             'hvac': {
@@ -350,97 +350,97 @@ def generateBuilding():
     roomsObjectMap['Ground'] = ground
     building.ground = ground
 
-    # 0-Area1
-    Partition(u=0.122, size=50.53, rooms=[roomsObjectMap['0-Area1'], roomsObjectMap['Outside']])
-    Partition(u=0.122, size=21.60, rooms=[roomsObjectMap['0-Area1'], roomsObjectMap['Outside']])
-    Partition(u=0.124, size=32.00, rooms=[roomsObjectMap['0-Area1'], roomsObjectMap['Outside']])
-    Partition(u=0.124, size=22.11, rooms=[roomsObjectMap['0-Area1'], roomsObjectMap['Outside']])
+    # Kuchnia, salon, korytarz
+    Partition(u=0.122, size=50.53, rooms=[roomsObjectMap['Kuchnia, salon, korytarz'], roomsObjectMap['Outside']])
+    Partition(u=0.122, size=21.60, rooms=[roomsObjectMap['Kuchnia, salon, korytarz'], roomsObjectMap['Outside']])
+    Partition(u=0.124, size=32.00, rooms=[roomsObjectMap['Kuchnia, salon, korytarz'], roomsObjectMap['Outside']])
+    Partition(u=0.124, size=22.11, rooms=[roomsObjectMap['Kuchnia, salon, korytarz'], roomsObjectMap['Outside']])
 
-    Partition(u=1.637, size=9.45, rooms=[roomsObjectMap['0-Area1'], roomsObjectMap['0-Area5']])
-    Partition(u=1.981, size=3.57, rooms=[roomsObjectMap['0-Area1'], roomsObjectMap['0-Area3']])
-    Partition(u=1.981, size=11.68, rooms=[roomsObjectMap['0-Area1'], roomsObjectMap['0-Area4']])
-    Partition(u=1.981, size=8.63, rooms=[roomsObjectMap['0-Area1'], roomsObjectMap['0-Area5']])
-    Partition(u=1.981, size=7.02, rooms=[roomsObjectMap['0-Area1'], roomsObjectMap['0-Area2']])
-    Partition(u=1.981, size=6.31, rooms=[roomsObjectMap['0-Area1'], roomsObjectMap['0-Area3']])
+    Partition(u=1.637, size=9.45, rooms=[roomsObjectMap['Kuchnia, salon, korytarz'], roomsObjectMap['Pom. gospodarcze']])
+    Partition(u=1.981, size=3.57, rooms=[roomsObjectMap['Kuchnia, salon, korytarz'], roomsObjectMap['Gabinet']])
+    Partition(u=1.981, size=11.68, rooms=[roomsObjectMap['Kuchnia, salon, korytarz'], roomsObjectMap['Wiatrolap, garderoba']])
+    Partition(u=1.981, size=8.63, rooms=[roomsObjectMap['Kuchnia, salon, korytarz'], roomsObjectMap['Pom. gospodarcze']])
+    Partition(u=1.981, size=7.02, rooms=[roomsObjectMap['Kuchnia, salon, korytarz'], roomsObjectMap['Lazienka']])
+    Partition(u=1.981, size=6.31, rooms=[roomsObjectMap['Kuchnia, salon, korytarz'], roomsObjectMap['Gabinet']])
 
-    Partition(u=1.637, size=14.62, rooms=[roomsObjectMap['0-Area1'], roomsObjectMap['1-Area3']])
-    Partition(u=10, size=6.83, rooms=[roomsObjectMap['0-Area1'], roomsObjectMap['1-Area3']])
-    Partition(u=1.637, size=7.78, rooms=[roomsObjectMap['0-Area1'], roomsObjectMap['1-Area3']])
+    Partition(u=1.637, size=14.62, rooms=[roomsObjectMap['Kuchnia, salon, korytarz'], roomsObjectMap['Korytarz']])
+    Partition(u=10, size=6.83, rooms=[roomsObjectMap['Kuchnia, salon, korytarz'], roomsObjectMap['Korytarz']])
+    Partition(u=1.637, size=7.78, rooms=[roomsObjectMap['Kuchnia, salon, korytarz'], roomsObjectMap['Korytarz']])
 
-    Partition(u=0.171, size=71.84, rooms=[roomsObjectMap['0-Area1'], roomsObjectMap['Ground']])
-    Partition(u=0.133, size=32.00, rooms=[roomsObjectMap['0-Area1'], roomsObjectMap['Outside']])
-    Partition(u=0.297, size=7.41, rooms=[roomsObjectMap['0-Area1'], roomsObjectMap['1-Area1']])
-    Partition(u=0.297, size=10.78, rooms=[roomsObjectMap['0-Area1'], roomsObjectMap['1-Area2']])
-    Partition(u=0.297, size=10.15, rooms=[roomsObjectMap['0-Area1'], roomsObjectMap['1-Area3']])
-    Partition(u=0.297, size=3.52, rooms=[roomsObjectMap['0-Area1'], roomsObjectMap['1-Area5']])
+    Partition(u=0.171, size=71.84, rooms=[roomsObjectMap['Kuchnia, salon, korytarz'], roomsObjectMap['Ground']])
+    Partition(u=0.133, size=32.00, rooms=[roomsObjectMap['Kuchnia, salon, korytarz'], roomsObjectMap['Outside']])
+    Partition(u=0.297, size=7.41, rooms=[roomsObjectMap['Kuchnia, salon, korytarz'], roomsObjectMap['Pokoj dziecka 1']])
+    Partition(u=0.297, size=10.78, rooms=[roomsObjectMap['Kuchnia, salon, korytarz'], roomsObjectMap['Pokoj dziecka 2']])
+    Partition(u=0.297, size=10.15, rooms=[roomsObjectMap['Kuchnia, salon, korytarz'], roomsObjectMap['Korytarz']])
+    Partition(u=0.297, size=3.52, rooms=[roomsObjectMap['Kuchnia, salon, korytarz'], roomsObjectMap['Sypialnia, garderoba']])
 
-    # 0-Area2
-    Partition(u=1.981, size=8.723, rooms=[roomsObjectMap['0-Area2'], roomsObjectMap['0-Area5']])
-    Partition(u=1.981, size=8.723, rooms=[roomsObjectMap['0-Area2'], roomsObjectMap['0-Area3']])
+    # Lazienka
+    Partition(u=1.981, size=8.723, rooms=[roomsObjectMap['Lazienka'], roomsObjectMap['Pom. gospodarcze']])
+    Partition(u=1.981, size=8.723, rooms=[roomsObjectMap['Lazienka'], roomsObjectMap['Gabinet']])
 
-    Partition(u=0.122, size=6.405, rooms=[roomsObjectMap['0-Area2'], roomsObjectMap['Outside']])
-    Partition(u=0.171, size=5.530, rooms=[roomsObjectMap['0-Area2'], roomsObjectMap['Ground']])
-    Partition(u=0.297, size=4.06, rooms=[roomsObjectMap['0-Area2'], roomsObjectMap['1-Area4']])
-    Partition(u=0.297, size=1.80, rooms=[roomsObjectMap['0-Area2'], roomsObjectMap['1-Area5']])
+    Partition(u=0.122, size=6.405, rooms=[roomsObjectMap['Lazienka'], roomsObjectMap['Outside']])
+    Partition(u=0.171, size=5.530, rooms=[roomsObjectMap['Lazienka'], roomsObjectMap['Ground']])
+    Partition(u=0.297, size=4.06, rooms=[roomsObjectMap['Lazienka'], roomsObjectMap['Lazienka, pralnia']])
+    Partition(u=0.297, size=1.80, rooms=[roomsObjectMap['Lazienka'], roomsObjectMap['Sypialnia, garderoba']])
 
-    # 0-Area3
-    Partition(u=0.122, size=16.775, rooms=[roomsObjectMap['0-Area3'], roomsObjectMap['Outside']])
-    Partition(u=0.122, size=12.200, rooms=[roomsObjectMap['0-Area3'], roomsObjectMap['Outside']])
+    # Gabinet
+    Partition(u=0.122, size=16.775, rooms=[roomsObjectMap['Gabinet'], roomsObjectMap['Outside']])
+    Partition(u=0.122, size=12.200, rooms=[roomsObjectMap['Gabinet'], roomsObjectMap['Outside']])
 
-    Partition(u=1.981, size=10.37, rooms=[roomsObjectMap['0-Area3'], roomsObjectMap['0-Area4']])
+    Partition(u=1.981, size=10.37, rooms=[roomsObjectMap['Gabinet'], roomsObjectMap['Wiatrolap, garderoba']])
 
-    Partition(u=0.171, size=19.43, rooms=[roomsObjectMap['0-Area3'], roomsObjectMap['Ground']])
-    Partition(u=0.297, size=19.43, rooms=[roomsObjectMap['0-Area3'], roomsObjectMap['1-Area5']])
+    Partition(u=0.171, size=19.43, rooms=[roomsObjectMap['Gabinet'], roomsObjectMap['Ground']])
+    Partition(u=0.297, size=19.43, rooms=[roomsObjectMap['Gabinet'], roomsObjectMap['Sypialnia, garderoba']])
 
-    # 0-Area4
-    Partition(u=0.122, size=10.37, rooms=[roomsObjectMap['0-Area4'], roomsObjectMap['Outside']])
-    Partition(u=0.122, size=11.59, rooms=[roomsObjectMap['0-Area4'], roomsObjectMap['Outside']])
+    # Wiatrolap, garderoba
+    Partition(u=0.122, size=10.37, rooms=[roomsObjectMap['Wiatrolap, garderoba'], roomsObjectMap['Outside']])
+    Partition(u=0.122, size=11.59, rooms=[roomsObjectMap['Wiatrolap, garderoba'], roomsObjectMap['Outside']])
 
-    Partition(u=0.171, size=39.8025, rooms=[roomsObjectMap['0-Area4'], roomsObjectMap['Ground']])
-    Partition(u=0.297, size=39.8025, rooms=[roomsObjectMap['0-Area4'], roomsObjectMap['1-Area1']])
+    Partition(u=0.171, size=39.8025, rooms=[roomsObjectMap['Wiatrolap, garderoba'], roomsObjectMap['Ground']])
+    Partition(u=0.297, size=39.8025, rooms=[roomsObjectMap['Wiatrolap, garderoba'], roomsObjectMap['Pokoj dziecka 1']])
 
-    # 0-Area5
-    Partition(u=0.122, size=7.869, rooms=[roomsObjectMap['0-Area5'], roomsObjectMap['Outside']])
+    # Pom. gospodarcze
+    Partition(u=0.122, size=7.869, rooms=[roomsObjectMap['Pom. gospodarcze'], roomsObjectMap['Outside']])
 
-    Partition(u=0.171, size=6.64, rooms=[roomsObjectMap['0-Area5'], roomsObjectMap['Ground']])
-    Partition(u=0.297, size=6.64, rooms=[roomsObjectMap['0-Area5'], roomsObjectMap['1-Area4']])
+    Partition(u=0.171, size=6.64, rooms=[roomsObjectMap['Pom. gospodarcze'], roomsObjectMap['Ground']])
+    Partition(u=0.297, size=6.64, rooms=[roomsObjectMap['Pom. gospodarcze'], roomsObjectMap['Lazienka, pralnia']])
 
     # Level I
-    # 1-Area1
-    Partition(u=0.122, size=14.62, rooms=[roomsObjectMap['1-Area1'], roomsObjectMap['Outside']])
-    Partition(u=0.122, size=20.61, rooms=[roomsObjectMap['1-Area1'], roomsObjectMap['Outside']])
+    # Pokoj dziecka 1
+    Partition(u=0.122, size=14.62, rooms=[roomsObjectMap['Pokoj dziecka 1'], roomsObjectMap['Outside']])
+    Partition(u=0.122, size=20.61, rooms=[roomsObjectMap['Pokoj dziecka 1'], roomsObjectMap['Outside']])
 
-    Partition(u=1.981, size=11.39, rooms=[roomsObjectMap['1-Area1'], roomsObjectMap['1-Area2']])
-    Partition(u=1.981, size=3.23, rooms=[roomsObjectMap['1-Area1'], roomsObjectMap['1-Area3']])
-    Partition(u=1.981, size=15.30, rooms=[roomsObjectMap['1-Area1'], roomsObjectMap['1-Area5']])
+    Partition(u=1.981, size=11.39, rooms=[roomsObjectMap['Pokoj dziecka 1'], roomsObjectMap['Pokoj dziecka 2']])
+    Partition(u=1.981, size=3.23, rooms=[roomsObjectMap['Pokoj dziecka 1'], roomsObjectMap['Korytarz']])
+    Partition(u=1.981, size=15.30, rooms=[roomsObjectMap['Pokoj dziecka 1'], roomsObjectMap['Sypialnia, garderoba']])
 
-    Partition(u=0.133, size=17.33, rooms=[roomsObjectMap['1-Area1'], roomsObjectMap['Outside']])
+    Partition(u=0.133, size=17.33, rooms=[roomsObjectMap['Pokoj dziecka 1'], roomsObjectMap['Outside']])
 
-    # 1-Area2
-    Partition(u=0.122, size=26.01, rooms=[roomsObjectMap['1-Area2'], roomsObjectMap['Outside']])
+    # Pokoj dziecka 2
+    Partition(u=0.122, size=26.01, rooms=[roomsObjectMap['Pokoj dziecka 2'], roomsObjectMap['Outside']])
 
-    Partition(u=1.981, size=21.30, rooms=[roomsObjectMap['1-Area2'], roomsObjectMap['1-Area3']])
+    Partition(u=1.981, size=21.30, rooms=[roomsObjectMap['Pokoj dziecka 2'], roomsObjectMap['Korytarz']])
 
-    Partition(u=0.133, size=14.68, rooms=[roomsObjectMap['1-Area2'], roomsObjectMap['Outside']])
+    Partition(u=0.133, size=14.68, rooms=[roomsObjectMap['Pokoj dziecka 2'], roomsObjectMap['Outside']])
 
-    # 1-Area3
-    Partition(u=1.981, size=3.60, rooms=[roomsObjectMap['1-Area3'], roomsObjectMap['1-Area5']])
-    Partition(u=1.981, size=7.83, rooms=[roomsObjectMap['1-Area3'], roomsObjectMap['1-Area5']])
-    Partition(u=1.981, size=12.57, rooms=[roomsObjectMap['1-Area3'], roomsObjectMap['1-Area4']])
+    # Korytarz
+    Partition(u=1.981, size=3.60, rooms=[roomsObjectMap['Korytarz'], roomsObjectMap['Sypialnia, garderoba']])
+    Partition(u=1.981, size=7.83, rooms=[roomsObjectMap['Korytarz'], roomsObjectMap['Sypialnia, garderoba']])
+    Partition(u=1.981, size=12.57, rooms=[roomsObjectMap['Korytarz'], roomsObjectMap['Lazienka, pralnia']])
 
-    Partition(u=0.133, size=12.24, rooms=[roomsObjectMap['1-Area3'], roomsObjectMap['Outside']])
+    Partition(u=0.133, size=12.24, rooms=[roomsObjectMap['Korytarz'], roomsObjectMap['Outside']])
 
-    # 1-Area4
-    Partition(u=0.122, size=8.81, rooms=[roomsObjectMap['1-Area4'], roomsObjectMap['Outside']])
+    # Lazienka, pralnia
+    Partition(u=0.122, size=8.81, rooms=[roomsObjectMap['Lazienka, pralnia'], roomsObjectMap['Outside']])
 
-    Partition(u=1.981, size=7.78, rooms=[roomsObjectMap['1-Area4'], roomsObjectMap['1-Area5']])
+    Partition(u=1.981, size=7.78, rooms=[roomsObjectMap['Lazienka, pralnia'], roomsObjectMap['Sypialnia, garderoba']])
 
-    Partition(u=0.133, size=12.59, rooms=[roomsObjectMap['1-Area4'], roomsObjectMap['Outside']])
+    Partition(u=0.133, size=12.59, rooms=[roomsObjectMap['Lazienka, pralnia'], roomsObjectMap['Outside']])
 
-    # 1-Area5
-    Partition(u=0.122, size=11.25, rooms=[roomsObjectMap['1-Area5'], roomsObjectMap['Outside']])
-    Partition(u=0.122, size=20.54, rooms=[roomsObjectMap['1-Area5'], roomsObjectMap['Outside']])
+    # Sypialnia, garderoba
+    Partition(u=0.122, size=11.25, rooms=[roomsObjectMap['Sypialnia, garderoba'], roomsObjectMap['Outside']])
+    Partition(u=0.122, size=20.54, rooms=[roomsObjectMap['Sypialnia, garderoba'], roomsObjectMap['Outside']])
 
-    Partition(u=0.133, size=25.96, rooms=[roomsObjectMap['1-Area5'], roomsObjectMap['Outside']])
+    Partition(u=0.133, size=25.96, rooms=[roomsObjectMap['Sypialnia, garderoba'], roomsObjectMap['Outside']])
 
     return building
